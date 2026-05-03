@@ -115,9 +115,16 @@ export async function deleteFoodItem(id: string) {
 
 export async function getDietLogs() {
   try {
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return []
+    }
+
     const { data, error } = await supabase
       .from('diet_logs')
       .select('*')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -133,9 +140,15 @@ export async function getDietLogs() {
 
 export async function addDietLog(log: any) {
   try {
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return null
+    }
+
     const { data, error } = await supabase
       .from('diet_logs')
-      .insert(log)
+      .insert({ ...log, user_id: user.id })
       .select()
       .single()
 
@@ -152,10 +165,17 @@ export async function addDietLog(log: any) {
 
 export async function deleteDietLog(id: string) {
   try {
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return false
+    }
+
     const { error } = await supabase
       .from('diet_logs')
       .delete()
       .eq('id', id)
+      .eq('user_id', user.id)
 
     if (error) {
       console.error('Error deleting diet log:', error)
