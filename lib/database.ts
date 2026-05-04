@@ -91,18 +91,34 @@ function getStoredProfile(): Profile {
   }
 }
 
-function saveProfile(profile: Profile) {
-  if (typeof window === 'undefined') return
+function saveProfile(profile: Profile): boolean {
+  if (typeof window === 'undefined') {
+    console.error('saveProfile: window is undefined')
+    return false
+  }
   const userId = getCurrentUserId()
   if (!userId) {
     console.error('saveProfile: Cannot save profile - no user ID set')
-    return
+    return false
   }
   const key = getStorageKey(PROFILE_STORAGE_KEY)
   console.log('saveProfile: userId =', userId, 'key =', key, 'saving profile:', profile)
-  localStorage.setItem(key, JSON.stringify(profile))
-  console.log('saveProfile: saved, verify:', localStorage.getItem(key))
+  try {
+    localStorage.setItem(key, JSON.stringify(profile))
+    const saved = localStorage.getItem(key)
+    console.log('saveProfile: saved, verify:', saved)
+
+    // 立即验证保存是否成功
+    if (!saved || saved !== JSON.stringify(profile)) {
+      console.error('saveProfile: Save verification failed!')
+      return false
+    }
+  } catch (e) {
+    console.error('saveProfile: Error saving to localStorage:', e)
+    return false
+  }
   window.dispatchEvent(new Event('food-diary-update'))
+  return true
 }
 
 function getStoredTargets(): NutritionTargets | null {
@@ -183,8 +199,9 @@ export function getProfile(): Profile {
 }
 
 export function upsertProfile(profile: Profile): boolean {
-  saveProfile(profile)
-  return true
+  const result = saveProfile(profile)
+  console.log('upsertProfile: Save result =', result)
+  return result
 }
 
 export function getFoodItems(): FoodItem[] {
