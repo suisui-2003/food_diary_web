@@ -5,21 +5,20 @@ import { getDietLogs, deleteDietLog } from '@/lib/database'
 
 export default function DietHistoryTable() {
   const [records, setRecords] = useState<any[]>([])
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
-    const loadRecords = () => {
-      setRecords(getDietLogs())
-    }
-
-    loadRecords()
+    console.log('DietHistoryTable: Loading data, refreshKey:', refreshKey)
+    setRecords(getDietLogs())
 
     const handleUpdate = () => {
-      loadRecords()
+      console.log('DietHistoryTable: food-diary-update received')
+      setRefreshKey(prev => prev + 1)
     }
 
     window.addEventListener('food-diary-update', handleUpdate)
     return () => window.removeEventListener('food-diary-update', handleUpdate)
-  }, [])
+  }, [refreshKey])
 
   const handleDelete = (id: string) => {
     if (confirm('确定要删除这条记录吗？')) {

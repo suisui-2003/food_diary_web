@@ -23,22 +23,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      const userId = session?.user?.id ?? null
+      console.log('AuthProvider: Initial session, user ID:', userId)
       setSession(session)
       setUser(session?.user ?? null)
-      setCurrentUserId(session?.user?.id ?? null)
+      setCurrentUserId(userId)
       setLoading(false)
+      // Trigger event after setting user ID
+      requestAnimationFrame(() => {
+        console.log('AuthProvider: Triggering food-diary-update')
+        window.dispatchEvent(new Event('food-diary-update'))
+      })
     })
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('AuthProvider: Auth state changed:', event, 'user ID:', session?.user?.id)
       setSession(session)
       setUser(session?.user ?? null)
       setCurrentUserId(session?.user?.id ?? null)
       setLoading(false)
       // Trigger event to notify components to reload data
-      window.dispatchEvent(new Event('food-diary-update'))
+      requestAnimationFrame(() => {
+        console.log('AuthProvider: Triggering food-diary-update')
+        window.dispatchEvent(new Event('food-diary-update'))
+      })
     })
 
     return () => subscription.unsubscribe()

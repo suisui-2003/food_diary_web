@@ -2,8 +2,11 @@ let currentUserId: string | null = null
 let listeners: ((userId: string | null) => void)[] = []
 
 export function setCurrentUserId(userId: string | null) {
-  currentUserId = userId
-  listeners.forEach(listener => listener(userId))
+  if (currentUserId !== userId) {
+    console.log('Setting user ID:', userId)
+    currentUserId = userId
+    listeners.forEach(listener => listener(userId))
+  }
 }
 
 export function getCurrentUserId(): string | null {
@@ -11,7 +14,11 @@ export function getCurrentUserId(): string | null {
 }
 
 export function getStorageKey(key: string): string {
-  return currentUserId ? `${currentUserId}_${key}` : key
+  const userId = currentUserId
+  if (!userId) {
+    console.warn('No user ID set, using default key:', key)
+  }
+  return userId ? `${userId}_${key}` : key
 }
 
 export function onUserIdChange(callback: (userId: string | null) => void) {

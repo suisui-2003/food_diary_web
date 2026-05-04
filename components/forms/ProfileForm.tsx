@@ -14,36 +14,35 @@ export default function ProfileFormGlass() {
     goal: 'maintain',
   })
   const [targets, setTargets] = useState<NutritionTargets | null>(null)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
-    const loadData = () => {
-      const data = getProfile()
-      if (data) {
-        setProfile({
-          height_cm: data.height_cm || 175,
-          weight_kg: Number(data.weight_kg) || 70,
-          age: data.age || 25,
-          gender: (data.gender as 'male' | 'female') || 'male',
-          activity_level: (data.activity_level as any) || 'moderate',
-          goal: (data.goal as any) || 'maintain',
-        })
+    console.log('ProfileForm: Loading data, refreshKey:', refreshKey)
+    const data = getProfile()
+    if (data) {
+      setProfile({
+        height_cm: data.height_cm || 175,
+        weight_kg: Number(data.weight_kg) || 70,
+        age: data.age || 25,
+        gender: (data.gender as 'male' | 'female') || 'male',
+        activity_level: (data.activity_level as any) || 'moderate',
+        goal: (data.goal as any) || 'maintain',
+      })
 
-        if (data.daily_calories_target) {
-          setTargets({
-            daily_calories_target: data.daily_calories_target,
-            daily_protein_target_g: Number(data.daily_protein_target_g) || 120,
-            daily_fat_target_g: Number(data.daily_fat_target_g) || 67,
-            daily_carbs_target_g: Number(data.daily_carbs_target_g) || 225,
-            daily_sodium_target_mg: Number(data.daily_sodium_target_mg) || 2300,
-          })
-        }
+      if (data.daily_calories_target) {
+        setTargets({
+          daily_calories_target: data.daily_calories_target,
+          daily_protein_target_g: Number(data.daily_protein_target_g) || 120,
+          daily_fat_target_g: Number(data.daily_fat_target_g) || 67,
+          daily_carbs_target_g: Number(data.daily_carbs_target_g) || 225,
+          daily_sodium_target_mg: Number(data.daily_sodium_target_mg) || 2300,
+        })
       }
     }
 
-    loadData()
-
     const handleUpdate = () => {
-      loadData()
+      console.log('ProfileForm: food-diary-update received')
+      setRefreshKey(prev => prev + 1)
     }
 
     window.addEventListener('food-diary-update', handleUpdate)
@@ -51,7 +50,7 @@ export default function ProfileFormGlass() {
     return () => {
       window.removeEventListener('food-diary-update', handleUpdate)
     }
-  }, [])
+  }, [refreshKey])
 
   const handleCalculate = async () => {
     const result = calculateNutritionTargets(profile)

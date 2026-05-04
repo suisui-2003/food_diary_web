@@ -20,6 +20,7 @@ interface DietLogRecord {
 export default function DietLogPage() {
   const [analyzing, setAnalyzing] = useState(false)
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0])
+  const [refreshKey, setRefreshKey] = useState(0)
   const [target, setTarget] = useState<NutritionTargets>({
     daily_calories_target: 2000,
     daily_protein_target_g: 120,
@@ -37,17 +38,18 @@ export default function DietLogPage() {
   const [todayRecords, setTodayRecords] = useState<DietLogRecord[]>([])
 
   useEffect(() => {
+    console.log('DietLogPage: Loading data, refreshKey:', refreshKey)
     loadTargets()
     loadTodayRecords()
 
     const handleUpdate = () => {
-      loadTargets()
-      loadTodayRecords()
+      console.log('DietLogPage: food-diary-update received')
+      setRefreshKey(prev => prev + 1)
     }
 
     window.addEventListener('food-diary-update', handleUpdate)
     return () => window.removeEventListener('food-diary-update', handleUpdate)
-  }, [selectedDate])
+  }, [selectedDate, refreshKey])
 
   const loadTargets = async () => {
     const profile = await getProfile()
