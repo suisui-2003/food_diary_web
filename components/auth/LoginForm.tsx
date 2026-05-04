@@ -29,7 +29,7 @@ export function LoginForm() {
         return
       }
 
-      router.push('/')
+      window.location.href = '/'
     } catch (err) {
       setError('登录失败，请稍后重试')
     } finally {

@@ -29,11 +29,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null)
       setCurrentUserId(userId)
       setLoading(false)
-      // Trigger event after setting user ID
-      requestAnimationFrame(() => {
+      // Trigger event after setting user ID with delay to ensure React updates complete
+      setTimeout(() => {
         console.log('AuthProvider: Triggering food-diary-update')
         window.dispatchEvent(new Event('food-diary-update'))
-      })
+      }, 100)
     })
 
     // Listen for auth changes
@@ -45,11 +45,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null)
       setCurrentUserId(session?.user?.id ?? null)
       setLoading(false)
-      // Trigger event to notify components to reload data
-      requestAnimationFrame(() => {
+      // Trigger event to notify components to reload data with delay
+      setTimeout(() => {
         console.log('AuthProvider: Triggering food-diary-update')
         window.dispatchEvent(new Event('food-diary-update'))
-      })
+      }, 100)
     })
 
     return () => subscription.unsubscribe()
