@@ -39,6 +39,21 @@ export interface DietLog {
   calories: number
 }
 
+function getUserId(): string {
+  if (typeof window === 'undefined') return 'guest'
+  try {
+    const stored = localStorage.getItem('current_user_id')
+    return stored || 'guest'
+  } catch {
+    return 'guest'
+  }
+}
+
+function getStorageKey(key: string): string {
+  const userId = getUserId()
+  return `${userId}_${key}`
+}
+
 const PROFILE_STORAGE_KEY = 'user_profile'
 const TARGETS_STORAGE_KEY = 'nutrition_targets'
 const FOOD_ITEMS_STORAGE_KEY = 'food_items_library'
@@ -54,7 +69,7 @@ function getStoredProfile(): Profile {
     goal: 'maintain',
   }
   try {
-    const stored = localStorage.getItem(PROFILE_STORAGE_KEY)
+    const stored = localStorage.getItem(getStorageKey(PROFILE_STORAGE_KEY))
     return stored ? JSON.parse(stored) : {
       height_cm: 175,
       weight_kg: 70,
@@ -77,14 +92,14 @@ function getStoredProfile(): Profile {
 
 function saveProfile(profile: Profile) {
   if (typeof window === 'undefined') return
-  localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile))
+  localStorage.setItem(getStorageKey(PROFILE_STORAGE_KEY), JSON.stringify(profile))
   window.dispatchEvent(new Event('food-diary-update'))
 }
 
 function getStoredTargets(): NutritionTargets | null {
   if (typeof window === 'undefined') return null
   try {
-    const stored = localStorage.getItem(TARGETS_STORAGE_KEY)
+    const stored = localStorage.getItem(getStorageKey(TARGETS_STORAGE_KEY))
     return stored ? JSON.parse(stored) : null
   } catch {
     return null
@@ -93,14 +108,14 @@ function getStoredTargets(): NutritionTargets | null {
 
 function saveTargets(targets: NutritionTargets) {
   if (typeof window === 'undefined') return
-  localStorage.setItem(TARGETS_STORAGE_KEY, JSON.stringify(targets))
+  localStorage.setItem(getStorageKey(TARGETS_STORAGE_KEY), JSON.stringify(targets))
   window.dispatchEvent(new Event('food-diary-update'))
 }
 
 function getStoredFoodItems(): FoodItem[] {
   if (typeof window === 'undefined') return getDefaultFoodItems()
   try {
-    const stored = localStorage.getItem(FOOD_ITEMS_STORAGE_KEY)
+    const stored = localStorage.getItem(getStorageKey(FOOD_ITEMS_STORAGE_KEY))
     return stored ? JSON.parse(stored) : getDefaultFoodItems()
   } catch {
     return getDefaultFoodItems()
@@ -113,14 +128,14 @@ function getDefaultFoodItems(): FoodItem[] {
 
 function saveFoodItems(items: FoodItem[]) {
   if (typeof window === 'undefined') return
-  localStorage.setItem(FOOD_ITEMS_STORAGE_KEY, JSON.stringify(items))
+  localStorage.setItem(getStorageKey(FOOD_ITEMS_STORAGE_KEY), JSON.stringify(items))
   window.dispatchEvent(new Event('food-diary-update'))
 }
 
 function getStoredDietLogs(): DietLog[] {
   if (typeof window === 'undefined') return []
   try {
-    const stored = localStorage.getItem(DIET_LOGS_STORAGE_KEY)
+    const stored = localStorage.getItem(getStorageKey(DIET_LOGS_STORAGE_KEY))
     return stored ? JSON.parse(stored) : []
   } catch {
     return []
@@ -129,7 +144,7 @@ function getStoredDietLogs(): DietLog[] {
 
 function saveDietLogs(logs: DietLog[]) {
   if (typeof window === 'undefined') return
-  localStorage.setItem(DIET_LOGS_STORAGE_KEY, JSON.stringify(logs))
+  localStorage.setItem(getStorageKey(DIET_LOGS_STORAGE_KEY), JSON.stringify(logs))
   window.dispatchEvent(new Event('food-diary-update'))
 }
 

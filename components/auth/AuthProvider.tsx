@@ -24,6 +24,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
+      if (session?.user?.id) {
+        localStorage.setItem('current_user_id', session.user.id)
+      }
       setLoading(false)
     })
 
@@ -33,6 +36,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
+      if (session?.user?.id) {
+        localStorage.setItem('current_user_id', session.user.id)
+      } else {
+        localStorage.removeItem('current_user_id')
+      }
       setLoading(false)
     })
 
