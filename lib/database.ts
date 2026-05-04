@@ -1,4 +1,5 @@
 import type { NutritionTargets } from '@/lib/utils/nutritionCalculator'
+import { getStorageKey } from './storage'
 
 export interface Profile {
   id?: string
@@ -37,21 +38,6 @@ export interface DietLog {
   protein_g: number
   carbs_g: number
   calories: number
-}
-
-function getUserId(): string {
-  if (typeof window === 'undefined') return 'guest'
-  try {
-    const stored = localStorage.getItem('current_user_id')
-    return stored || 'guest'
-  } catch {
-    return 'guest'
-  }
-}
-
-function getStorageKey(key: string): string {
-  const userId = getUserId()
-  return `${userId}_${key}`
 }
 
 const PROFILE_STORAGE_KEY = 'user_profile'

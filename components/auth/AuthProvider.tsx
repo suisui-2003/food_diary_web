@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
+import { setCurrentUserId } from '@/lib/storage'
 
 interface AuthContextType {
   user: User | null
@@ -24,9 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
-      if (session?.user?.id) {
-        localStorage.setItem('current_user_id', session.user.id)
-      }
+      setCurrentUserId(session?.user?.id ?? null)
       setLoading(false)
     })
 
@@ -36,12 +35,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
-      if (session?.user?.id) {
-        localStorage.setItem('current_user_id', session.user.id)
-      } else {
-        localStorage.removeItem('current_user_id')
-      }
+      setCurrentUserId(session?.user?.id ?? null)
       setLoading(false)
+      // Trigger event to notify components to reload data
+      window.dispatchEvent(new Event('food-diary-update'))
     })
 
     return () => subscription.unsubscribe()
