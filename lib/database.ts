@@ -55,8 +55,11 @@ function getStoredProfile(): Profile {
     goal: 'maintain',
   }
   try {
-    const stored = localStorage.getItem(getStorageKey(PROFILE_STORAGE_KEY))
-    return stored ? JSON.parse(stored) : {
+    const userId = getCurrentUserId()
+    const key = getStorageKey(PROFILE_STORAGE_KEY)
+    console.log('getStoredProfile: userId =', userId, 'key =', key)
+    const stored = localStorage.getItem(key)
+    const profile = stored ? JSON.parse(stored) : {
       height_cm: 175,
       weight_kg: 70,
       age: 25,
@@ -64,6 +67,8 @@ function getStoredProfile(): Profile {
       activity_level: 'moderate',
       goal: 'maintain',
     }
+    console.log('getStoredProfile: loaded profile:', profile)
+    return profile
   } catch {
     return {
       height_cm: 175,
@@ -78,7 +83,11 @@ function getStoredProfile(): Profile {
 
 function saveProfile(profile: Profile) {
   if (typeof window === 'undefined') return
-  localStorage.setItem(getStorageKey(PROFILE_STORAGE_KEY), JSON.stringify(profile))
+  const userId = getCurrentUserId()
+  const key = getStorageKey(PROFILE_STORAGE_KEY)
+  console.log('saveProfile: userId =', userId, 'key =', key, 'saving profile:', profile)
+  localStorage.setItem(key, JSON.stringify(profile))
+  console.log('saveProfile: saved, verify:', localStorage.getItem(key))
   window.dispatchEvent(new Event('food-diary-update'))
 }
 

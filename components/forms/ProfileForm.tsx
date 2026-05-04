@@ -66,9 +66,8 @@ export default function ProfileFormGlass() {
   }
 
   const handleFieldBlur = async () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('user_profile', JSON.stringify(profile))
-    }
+    console.log('ProfileForm: Saving profile on blur', profile)
+    await upsertProfile(profile)
   }
 
   return (
