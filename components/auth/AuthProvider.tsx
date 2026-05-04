@@ -14,6 +14,27 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+// 迁移旧数据到新的用户特定键
+function migrateOldData(userId: string) {
+  console.log('AuthProvider: Starting data migration for user:', userId)
+
+  const oldKeys = [
+    { old: 'user_profile', new: `${userId}_user_profile` },
+    { old: 'food_items_library', new: `${userId}_food_items_library` },
+    { old: 'diet_records', new: `${userId}_diet_records` },
+    { old: 'nutrition_targets', new: `${userId}_nutrition_targets` },
+  ]
+
+  oldKeys.forEach(({ old, new: newKey }) => {
+    const oldValue = localStorage.getItem(old)
+    if (oldValue && !localStorage.getItem(newKey)) {
+      localStorage.setItem(newKey, oldValue)
+      localStorage.removeItem(old)
+      console.log(`AuthProvider: Migrated ${old} → ${newKey}`)
+    }
+  })
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
@@ -30,6 +51,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       const userId = session?.user?.id ?? null
       console.log('AuthProvider: Initial session, user ID:', userId)
+
+      // Migrate old data to new user-prefixed keys
+      if (userId) {
+        migrateOldData(userId)
+      }
+
       setSession(session)
       setUser(session?.user ?? null)
       setCurrentUserId(userId)
