@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import { calculateNutritionTargets, type Profile, type NutritionTargets } from '@/lib/utils/nutritionCalculator'
 import { getProfile, upsertProfile } from '@/lib/database'
+import { useAuth } from '@/components/auth/AuthProvider'
 
 export default function ProfileFormGlass() {
+  const { isReady } = useAuth()
   const [profile, setProfile] = useState<Profile>({
     height_cm: 175,
     weight_kg: 70,
@@ -17,6 +19,11 @@ export default function ProfileFormGlass() {
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
+    if (!isReady) {
+      console.log('ProfileForm: Waiting for auth to be ready')
+      return
+    }
+
     console.log('ProfileForm: Loading data, refreshKey:', refreshKey)
     const data = getProfile()
     if (data) {
@@ -50,7 +57,7 @@ export default function ProfileFormGlass() {
     return () => {
       window.removeEventListener('food-diary-update', handleUpdate)
     }
-  }, [refreshKey])
+  }, [refreshKey, isReady])
 
   const handleCalculate = async () => {
     const result = calculateNutritionTargets(profile)

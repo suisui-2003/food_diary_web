@@ -2,12 +2,19 @@
 
 import { useState, useEffect } from 'react'
 import { getDietLogs, deleteDietLog } from '@/lib/database'
+import { useAuth } from '@/components/auth/AuthProvider'
 
 export default function DietHistoryTable() {
+  const { isReady } = useAuth()
   const [records, setRecords] = useState<any[]>([])
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
+    if (!isReady) {
+      console.log('DietHistoryTable: Waiting for auth to be ready')
+      return
+    }
+
     console.log('DietHistoryTable: Loading data, refreshKey:', refreshKey)
     setRecords(getDietLogs())
 
@@ -18,7 +25,7 @@ export default function DietHistoryTable() {
 
     window.addEventListener('food-diary-update', handleUpdate)
     return () => window.removeEventListener('food-diary-update', handleUpdate)
-  }, [refreshKey])
+  }, [refreshKey, isReady])
 
   const handleDelete = (id: string) => {
     if (confirm('确定要删除这条记录吗？')) {

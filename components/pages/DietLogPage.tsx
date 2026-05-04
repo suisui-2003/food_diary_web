@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import DietLogForm from '@/components/forms/DietLogForm'
 import type { NutritionTargets, DailyNutrition, FoodItem } from '@/lib/utils/nutritionCalculator'
 import { getProfile, getDietLogs, addDietLog, getFoodItems } from '@/lib/database'
+import { useAuth } from '@/components/auth/AuthProvider'
 
 interface DietLogRecord {
   id?: string
@@ -18,6 +19,7 @@ interface DietLogRecord {
 }
 
 export default function DietLogPage() {
+  const { isReady } = useAuth()
   const [analyzing, setAnalyzing] = useState(false)
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0])
   const [refreshKey, setRefreshKey] = useState(0)
@@ -38,6 +40,11 @@ export default function DietLogPage() {
   const [todayRecords, setTodayRecords] = useState<DietLogRecord[]>([])
 
   useEffect(() => {
+    if (!isReady) {
+      console.log('DietLogPage: Waiting for auth to be ready')
+      return
+    }
+
     console.log('DietLogPage: Loading data, refreshKey:', refreshKey)
     loadTargets()
     loadTodayRecords()
@@ -49,7 +56,7 @@ export default function DietLogPage() {
 
     window.addEventListener('food-diary-update', handleUpdate)
     return () => window.removeEventListener('food-diary-update', handleUpdate)
-  }, [selectedDate, refreshKey])
+  }, [selectedDate, refreshKey, isReady])
 
   const loadTargets = async () => {
     const profile = await getProfile()

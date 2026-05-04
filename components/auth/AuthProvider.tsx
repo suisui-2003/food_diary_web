@@ -9,6 +9,7 @@ interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
+  isReady: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -17,6 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -32,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null)
       setCurrentUserId(userId)
       setLoading(false)
+      setIsReady(true)
       // Trigger event after setting user ID with delay to ensure React updates complete
       setTimeout(() => {
         console.log('AuthProvider: Triggering food-diary-update')
@@ -49,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null)
       setCurrentUserId(session?.user?.id ?? null)
       setLoading(false)
+      setIsReady(true)
       // Trigger event to notify components to reload data with delay
       setTimeout(() => {
         console.log('AuthProvider: Triggering food-diary-update')
@@ -60,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, session, loading }}>
+    <AuthContext.Provider value={{ user, session, loading, isReady }}>
       {children}
     </AuthContext.Provider>
   )

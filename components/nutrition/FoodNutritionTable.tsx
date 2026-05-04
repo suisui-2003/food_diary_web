@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react'
 import { type FoodItem } from '@/lib/utils/nutritionCalculator'
 import ImageUploader from './ImageUploader'
 import { getFoodItems, addFoodItem, updateFoodItem, deleteFoodItem } from '@/lib/database'
+import { useAuth } from '@/components/auth/AuthProvider'
 
 export default function FoodNutritionTable() {
+  const { isReady } = useAuth()
   const [foodItems, setFoodItems] = useState<FoodItem[]>([])
   const [editingItem, setEditingItem] = useState<FoodItem | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -13,6 +15,11 @@ export default function FoodNutritionTable() {
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
+    if (!isReady) {
+      console.log('FoodNutritionTable: Waiting for auth to be ready')
+      return
+    }
+
     console.log('FoodNutritionTable: Loading data, refreshKey:', refreshKey)
     setFoodItems(getFoodItems())
 
@@ -23,7 +30,7 @@ export default function FoodNutritionTable() {
 
     window.addEventListener('food-diary-update', handleUpdate)
     return () => window.removeEventListener('food-diary-update', handleUpdate)
-  }, [refreshKey])
+  }, [refreshKey, isReady])
 
   const handleAdd = (item: FoodItem) => {
     addFoodItem(item)
