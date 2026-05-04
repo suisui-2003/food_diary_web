@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { calculateNutritionTargets, type Profile, type NutritionTargets } from '@/lib/utils/nutritionCalculator'
 import { getProfile, upsertProfile } from '@/lib/database'
 import { useAuth } from '@/components/auth/AuthProvider'
@@ -17,6 +17,7 @@ export default function ProfileFormGlass() {
   })
   const [targets, setTargets] = useState<NutritionTargets | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (!isReady) {
@@ -85,6 +86,29 @@ export default function ProfileFormGlass() {
     }
     await upsertProfile(profile)
   }
+
+  // 实时保存 - 每次输入变化时保存（使用防抖）
+  useEffect(() => {
+    if (!isReady) return
+
+    // 清除之前的定时器
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+
+    // 设置新的定时器，延迟 500ms 后保存
+    saveTimeoutRef.current = setTimeout(() => {
+      console.log('ProfileForm: Auto-saving profile on change', profile)
+      upsertProfile(profile)
+    }, 500)
+
+    // 清理函数
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+    }
+  }, [profile, isReady])
 
   return (
     <div className="space-y-6">
