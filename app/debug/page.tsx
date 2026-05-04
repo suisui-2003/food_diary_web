@@ -97,12 +97,46 @@ export default function DebugPage() {
     setLogs([])
   }
 
+  const testProfileSave = () => {
+    const testProfile = {
+      height_cm: 180,
+      weight_kg: 75,
+      age: 30,
+      gender: 'male',
+      activity_level: 'moderate',
+      goal: 'maintain',
+      daily_calories_target: 2000,
+      daily_protein_target_g: 120,
+      daily_fat_target_g: 67,
+      daily_carbs_target_g: 225,
+      daily_sodium_target_mg: 2300,
+    }
+
+    const userId = getCurrentUserId()
+    const key = `${userId}_user_profile`
+    console.log('Test: Saving profile to', key, testProfile)
+    localStorage.setItem(key, JSON.stringify(testProfile))
+
+    // Verify
+    const saved = localStorage.getItem(key)
+    console.log('Test: Saved data', saved)
+    alert(`Test profile saved to ${key}\nCheck console for details`)
+  }
+
+  const testProfileRead = () => {
+    const userId = getCurrentUserId()
+    const key = `${userId}_user_profile`
+    const data = localStorage.getItem(key)
+    console.log('Test: Reading from', key, data)
+    alert(`Data in ${key}:\n${data || 'null'}`)
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-6 flex justify-between items-center">
+        <div className="mb-6 flex flex-wrap gap-2 items-center justify-between">
           <h1 className="text-3xl font-bold">调试控制台</h1>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => {
                 const keys = Object.keys(localStorage)
@@ -121,6 +155,18 @@ export default function DebugPage() {
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
             >
               刷新 LocalStorage
+            </button>
+            <button
+              onClick={testProfileSave}
+              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+            >
+              测试保存 Profile
+            </button>
+            <button
+              onClick={testProfileRead}
+              className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600"
+            >
+              测试读取 Profile
             </button>
             <button
               onClick={clearLogs}
@@ -153,6 +199,32 @@ export default function DebugPage() {
               </div>
             </div>
           </div>
+
+          {/* Profile 数据检查 */}
+          {user && (
+            <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <h3 className="font-semibold mb-2">Profile 数据检查</h3>
+              <div className="space-y-2 text-sm">
+                <div>
+                  <span className="font-bold">Profile Key:</span> {getStorageKey('user_profile')}
+                </div>
+                <div>
+                  <span className="font-bold">Profile Value:</span>
+                  <pre className="mt-1 p-2 bg-white rounded overflow-x-auto text-xs">
+                    {userData[getStorageKey('user_profile')]
+                      ? JSON.stringify(userData[getStorageKey('user_profile')], null, 2)
+                      : 'null'}
+                  </pre>
+                </div>
+                {localStorage.getItem('user_profile') && (
+                  <div className="text-orange-600 font-bold">
+                    ⚠️ 发现旧格式数据 'user_profile'，应该已迁移
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="mt-4">
             <h3 className="font-semibold mb-2">LocalStorage 内容 ({localStorageKeys.length} 个键)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
