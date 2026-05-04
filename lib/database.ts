@@ -84,6 +84,10 @@ function getStoredProfile(): Profile {
 function saveProfile(profile: Profile) {
   if (typeof window === 'undefined') return
   const userId = getCurrentUserId()
+  if (!userId) {
+    console.error('saveProfile: Cannot save profile - no user ID set')
+    return
+  }
   const key = getStorageKey(PROFILE_STORAGE_KEY)
   console.log('saveProfile: userId =', userId, 'key =', key, 'saving profile:', profile)
   localStorage.setItem(key, JSON.stringify(profile))
@@ -129,6 +133,10 @@ function getDefaultFoodItems(): FoodItem[] {
 function saveFoodItems(items: FoodItem[]) {
   if (typeof window === 'undefined') return
   const userId = getCurrentUserId()
+  if (!userId) {
+    console.error('saveFoodItems: Cannot save food items - no user ID set')
+    return
+  }
   const key = getStorageKey(FOOD_ITEMS_STORAGE_KEY)
   console.log('saveFoodItems: userId =', userId, 'key =', key, 'saving', items.length, 'items:', items.map(i => i.name))
   localStorage.setItem(key, JSON.stringify(items))
@@ -148,6 +156,11 @@ function getStoredDietLogs(): DietLog[] {
 
 function saveDietLogs(logs: DietLog[]) {
   if (typeof window === 'undefined') return
+  const userId = getCurrentUserId()
+  if (!userId) {
+    console.error('saveDietLogs: Cannot save diet logs - no user ID set')
+    return
+  }
   localStorage.setItem(getStorageKey(DIET_LOGS_STORAGE_KEY), JSON.stringify(logs))
   window.dispatchEvent(new Event('food-diary-update'))
 }

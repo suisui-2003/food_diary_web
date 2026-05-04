@@ -73,7 +73,11 @@ export default function ProfileFormGlass() {
   }
 
   const handleFieldBlur = async () => {
-    console.log('ProfileForm: Saving profile on blur', profile)
+    console.log('ProfileForm: Saving profile on blur, isReady:', isReady, 'profile:', profile)
+    if (!isReady) {
+      console.warn('ProfileForm: Cannot save - auth not ready yet')
+      return
+    }
     await upsertProfile(profile)
   }
 
