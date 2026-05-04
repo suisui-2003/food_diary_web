@@ -21,6 +21,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const supabase = createClient()
 
+    // Log all localStorage keys for debugging
+    console.log('AuthProvider: Current localStorage keys:', Object.keys(localStorage))
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       const userId = session?.user?.id ?? null
@@ -41,6 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('AuthProvider: Auth state changed:', event, 'user ID:', session?.user?.id)
+      console.log('AuthProvider: Current localStorage keys:', Object.keys(localStorage))
       setSession(session)
       setUser(session?.user ?? null)
       setCurrentUserId(session?.user?.id ?? null)

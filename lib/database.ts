@@ -1,5 +1,5 @@
 import type { NutritionTargets } from '@/lib/utils/nutritionCalculator'
-import { getStorageKey } from './storage'
+import { getStorageKey, getCurrentUserId } from './storage'
 
 export interface Profile {
   id?: string
@@ -101,11 +101,12 @@ function saveTargets(targets: NutritionTargets) {
 function getStoredFoodItems(): FoodItem[] {
   if (typeof window === 'undefined') return getDefaultFoodItems()
   try {
+    const userId = getCurrentUserId()
     const key = getStorageKey(FOOD_ITEMS_STORAGE_KEY)
-    console.log('getStoredFoodItems: storage key =', key)
+    console.log('getStoredFoodItems: userId =', userId, 'key =', key)
     const stored = localStorage.getItem(key)
     const items = stored ? JSON.parse(stored) : getDefaultFoodItems()
-    console.log('getStoredFoodItems: loaded', items.length, 'items')
+    console.log('getStoredFoodItems: loaded', items.length, 'items', items.map(i => i.name))
     return items
   } catch {
     return getDefaultFoodItems()
@@ -118,9 +119,11 @@ function getDefaultFoodItems(): FoodItem[] {
 
 function saveFoodItems(items: FoodItem[]) {
   if (typeof window === 'undefined') return
+  const userId = getCurrentUserId()
   const key = getStorageKey(FOOD_ITEMS_STORAGE_KEY)
-  console.log('saveFoodItems: storage key =', key, 'saving', items.length, 'items')
+  console.log('saveFoodItems: userId =', userId, 'key =', key, 'saving', items.length, 'items:', items.map(i => i.name))
   localStorage.setItem(key, JSON.stringify(items))
+  console.log('saveFoodItems: saved to localStorage, verify:', localStorage.getItem(key)?.substring(0, 100))
   window.dispatchEvent(new Event('food-diary-update'))
 }
 
