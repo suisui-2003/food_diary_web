@@ -24,9 +24,12 @@ export default function ProfileFormGlass() {
       return
     }
 
-    console.log('ProfileForm: Loading data, refreshKey:', refreshKey)
+    console.log('ProfileForm: Loading data, refreshKey:', refreshKey, 'isReady:', isReady)
+    console.log('ProfileForm: Calling getProfile()')
     const data = getProfile()
+    console.log('ProfileForm: getProfile returned:', data)
     if (data) {
+      console.log('ProfileForm: Setting profile state')
       setProfile({
         height_cm: data.height_cm || 175,
         weight_kg: Number(data.weight_kg) || 70,
@@ -45,6 +48,8 @@ export default function ProfileFormGlass() {
           daily_sodium_target_mg: Number(data.daily_sodium_target_mg) || 2300,
         })
       }
+    } else {
+      console.log('ProfileForm: No profile data returned')
     }
 
     const handleUpdate = () => {

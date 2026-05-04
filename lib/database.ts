@@ -59,6 +59,15 @@ function getStoredProfile(): Profile {
     const key = getStorageKey(PROFILE_STORAGE_KEY)
     console.log('getStoredProfile: userId =', userId, 'key =', key)
     const stored = localStorage.getItem(key)
+    console.log('getStoredProfile: stored value =', stored)
+
+    // 检查是否从旧键加载数据
+    const oldKey = 'user_profile'
+    const oldStored = localStorage.getItem(oldKey)
+    if (oldStored && !stored) {
+      console.log('getStoredProfile: Found data in old key, should migrate:', oldStored)
+    }
+
     const profile = stored ? JSON.parse(stored) : {
       height_cm: 175,
       weight_kg: 70,
@@ -69,7 +78,8 @@ function getStoredProfile(): Profile {
     }
     console.log('getStoredProfile: loaded profile:', profile)
     return profile
-  } catch {
+  } catch (e) {
+    console.error('getStoredProfile: Error loading profile:', e)
     return {
       height_cm: 175,
       weight_kg: 70,
@@ -166,7 +176,10 @@ function saveDietLogs(logs: DietLog[]) {
 }
 
 export function getProfile(): Profile {
-  return getStoredProfile()
+  console.log('getProfile: Called')
+  const result = getStoredProfile()
+  console.log('getProfile: Returning', result)
+  return result
 }
 
 export function upsertProfile(profile: Profile): boolean {
