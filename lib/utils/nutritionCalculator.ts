@@ -24,6 +24,7 @@ export interface FoodItem {
   calories: number
   sodium_mg: number
   carbs_g: number
+  notes?: string
   quantity?: number
   serving_size_g?: number
 }
@@ -44,10 +45,17 @@ const activityMultipliers = {
   very_active: 1.9,
 }
 
+// 蛋白质推荐摄入量（g/kg体重），基于活动和目标
+const proteinPerKg = {
+  lose_weight: 1.2, // 减重时保持肌肉
+  maintain: 1.0,   // 维持体重
+  gain_muscle: 1.8, // 增肌需要更多
+}
+
 const macroRatios = {
-  lose_weight: { protein: 0.35, fat: 0.25, carbs: 0.40 },
-  maintain: { protein: 0.25, fat: 0.30, carbs: 0.45 },
-  gain_muscle: { protein: 0.30, fat: 0.25, carbs: 0.45 },
+  lose_weight: { fat: 0.30, carbs: 0.40 }, // 蛋白质由体重决定，不再从热量中计算
+  maintain: { fat: 0.30, carbs: 0.50 },
+  gain_muscle: { fat: 0.25, carbs: 0.45 },
 }
 
 export function calculateBMR(profile: Profile): number {
@@ -87,12 +95,25 @@ export function calculateNutritionTargets(profile: Profile): NutritionTargets {
   }
 
   const ratios = macroRatios[profile.goal || 'maintain']
+  const weight = profile.weight_kg || 70
+  const proteinMultiplier = proteinPerKg[profile.goal || 'maintain']
+
+  // 蛋白质基于体重计算（更科学）
+  const daily_protein_target_g = Math.round(weight * proteinMultiplier)
+
+  // 计算蛋白质占用的热量
+  const proteinCalories = daily_protein_target_g * 4
+
+  // 剩余热量分配给脂肪和碳水
+  const remainingCalories = tdee - proteinCalories
+  const daily_fat_target_g = Math.round((remainingCalories * ratios.fat) / 9)
+  const daily_carbs_target_g = Math.round((remainingCalories * ratios.carbs) / 4)
 
   return {
     daily_calories_target: Math.round(tdee),
-    daily_protein_target_g: Math.round((tdee * ratios.protein) / 4),
-    daily_fat_target_g: Math.round((tdee * ratios.fat) / 9),
-    daily_carbs_target_g: Math.round((tdee * ratios.carbs) / 4),
+    daily_protein_target_g,
+    daily_fat_target_g,
+    daily_carbs_target_g,
     daily_sodium_target_mg: 2300,
   }
 }

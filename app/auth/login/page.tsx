@@ -14,7 +14,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           <div className="glass-card backdrop-blur-xl bg-white/10 rounded-2xl p-8 border border-white/20 shadow-xl">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-white mb-2">🍽️ 饮食记录</h1>
+              <h1 className="text-3xl font-bold text-white mb-2">🧠 AI营养分析师</h1>
               <p className="text-white/70">登录您的账户</p>
             </div>
 

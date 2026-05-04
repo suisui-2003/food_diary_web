@@ -1,0 +1,14 @@
+{
+  "name": "food-diary-mcp-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP server for food diary debugging",
+  "main": "mcp-server.js",
+  "scripts": {
+    "start": "node mcp-server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}

@@ -49,52 +49,54 @@ export default function DietHistoryTable() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold mb-6">三、饮食记录历史</h2>
+      <h2 className="text-2xl font-semibold text-white">三、饮食记录历史</h2>
 
       {records.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
+        <div className="text-center py-12 text-white/50">
           暂无饮食记录
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="px-4 py-3 text-left sticky left-0">时间</th>
-                <th className="px-4 py-3 text-left">食物及含量</th>
-                <th className="px-4 py-3 text-right">钠</th>
-                <th className="px-4 py-3 text-right">脂肪</th>
-                <th className="px-4 py-3 text-right">蛋白质</th>
-                <th className="px-4 py-3 text-right">碳水</th>
-                <th className="px-4 py-3 text-right">热量</th>
-                <th className="px-4 py-3 text-center">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {records.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).map((record) => (
-                <tr key={record.id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3 text-left">
-                    <div>{formatDate(record.date)}</div>
-                    <div className="text-xs text-gray-500">{formatTime(record.time)}</div>
-                  </td>
-                  <td className="px-4 py-3 text-left">{record.food_items || '-'}</td>
-                  <td className="px-4 py-3 text-right">{record.sodium_mg || 0}mg</td>
-                  <td className="px-4 py-3 text-right">{record.fat_g || 0}g</td>
-                  <td className="px-4 py-3 text-right">{record.protein_g || 0}g</td>
-                  <td className="px-4 py-3 text-right">{record.carbs_g || 0}g</td>
-                  <td className="px-4 py-3 text-right">{record.calories || 0}kcal</td>
-                  <td className="px-4 py-3 text-center">
-                    <button
-                      onClick={() => handleDelete(record.id)}
-                      className="text-red-600 hover:text-red-800 text-xs"
-                    >
-                      删除
-                    </button>
-                  </td>
+        <div className="glass-card-inner backdrop-blur-md bg-white/5 rounded-2xl overflow-hidden border border-white/10">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="px-4 py-3 text-left sticky left-0 text-white/80 font-medium">时间</th>
+                  <th className="px-4 py-3 text-left text-white/80 font-medium">食物及含量</th>
+                  <th className="px-4 py-3 text-right text-white/80 font-medium">钠</th>
+                  <th className="px-4 py-3 text-right text-white/80 font-medium">脂肪</th>
+                  <th className="px-4 py-3 text-right text-white/80 font-medium">蛋白质</th>
+                  <th className="px-4 py-3 text-right text-white/80 font-medium">碳水</th>
+                  <th className="px-4 py-3 text-right text-white/80 font-medium">热量</th>
+                  <th className="px-4 py-3 text-center text-white/80 font-medium">操作</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {records?.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).map((record) => (
+                  <tr key={record.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-3 text-left">
+                      <div className="text-white/90">{formatDate(record.date)}</div>
+                      <div className="text-xs text-white/50">{formatTime(record.time)}</div>
+                    </td>
+                    <td className="px-4 py-3 text-left text-white/70 max-w-xs truncate">{record.food_items || '-'}</td>
+                    <td className="px-4 py-3 text-right text-white/70">{record.sodium_mg || 0}mg</td>
+                    <td className="px-4 py-3 text-right text-white/70">{record.fat_g || 0}g</td>
+                    <td className="px-4 py-3 text-right text-white/70">{record.protein_g || 0}g</td>
+                    <td className="px-4 py-3 text-right text-white/70">{record.carbs_g || 0}g</td>
+                    <td className="px-4 py-3 text-right text-white/70">{record.calories || 0}kcal</td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => handleDelete(record.id)}
+                        className="text-rose-400 hover:text-rose-300 text-xs transition-colors"
+                      >
+                        删除
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

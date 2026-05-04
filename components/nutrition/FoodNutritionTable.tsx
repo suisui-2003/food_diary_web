@@ -49,15 +49,19 @@ export default function FoodNutritionTable() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center gap-4">
-        <h3 className="font-semibold">营养成分库</h3>
+      <div className="flex justify-between items-center gap-4 flex-wrap">
+        <h3 className="font-semibold text-white">营养成分库</h3>
         <div className="flex gap-2">
           <button
             onClick={() => {
               setShowImageUpload(!showImageUpload)
               setShowAddForm(false)
             }}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm"
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+              showImageUpload
+                ? 'bg-white/10 border border-white/20 text-white/70'
+                : 'bg-gradient-to-r from-emerald-500 to-green-600 text-white hover:shadow-lg hover:shadow-emerald-500/25 transform hover:-translate-y-0.5'
+            }`}
           >
             {showImageUpload ? '取消上传' : '📷 图片识别'}
           </button>
@@ -66,7 +70,11 @@ export default function FoodNutritionTable() {
               setShowAddForm(!showAddForm)
               setShowImageUpload(false)
             }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm"
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+              showAddForm
+                ? 'bg-white/10 border border-white/20 text-white/70'
+                : 'bg-gradient-to-r from-pink-500 to-blue-500 text-white hover:shadow-lg hover:shadow-pink-500/25 transform hover:-translate-y-0.5'
+            }`}
           >
             {showAddForm ? '取消' : '添加食物'}
           </button>
@@ -88,48 +96,50 @@ export default function FoodNutritionTable() {
         />
       )}
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-3 text-left">名称</th>
-              <th className="px-4 py-3 text-right">蛋白质</th>
-              <th className="px-4 py-3 text-right">脂肪</th>
-              <th className="px-4 py-3 text-right">热量</th>
-              <th className="px-4 py-3 text-right">钠</th>
-              <th className="px-4 py-3 text-right">碳水</th>
-              <th className="px-4 py-3 text-right">备注</th>
-              <th className="px-4 py-3 text-center">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {foodItems.map((item) => (
-              <tr key={item.id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-3">{item.name}</td>
-                <td className="px-4 py-3 text-right">{item.protein_g}g</td>
-                <td className="px-4 py-3 text-right">{item.fat_g}g</td>
-                <td className="px-4 py-3 text-right">{item.calories}kcal</td>
-                <td className="px-4 py-3 text-right">{item.sodium_mg}mg</td>
-                <td className="px-4 py-3 text-right">{item.carbs_g}g</td>
-                <td className="px-4 py-3 text-right">{item.notes || '-'}</td>
-                <td className="px-4 py-3 text-center space-x-2">
-                  <button
-                    onClick={() => setEditingItem(item)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    编辑
-                  </button>
-                  <button
-                    onClick={() => item.id && handleDelete(item.id)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    删除
-                  </button>
-                </td>
+      <div className="glass-card-inner backdrop-blur-md bg-white/5 rounded-2xl overflow-hidden border border-white/10">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="px-4 py-3 text-left text-white/80 font-medium">名称</th>
+                <th className="px-4 py-3 text-right text-white/80 font-medium">蛋白质</th>
+                <th className="px-4 py-3 text-right text-white/80 font-medium">脂肪</th>
+                <th className="px-4 py-3 text-right text-white/80 font-medium">热量</th>
+                <th className="px-4 py-3 text-right text-white/80 font-medium">钠</th>
+                <th className="px-4 py-3 text-right text-white/80 font-medium">碳水</th>
+                <th className="px-4 py-3 text-right text-white/80 font-medium">备注</th>
+                <th className="px-4 py-3 text-center text-white/80 font-medium">操作</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {foodItems?.map((item) => (
+                <tr key={item.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="px-4 py-3 text-white/90">{item.name}</td>
+                  <td className="px-4 py-3 text-right text-white/70">{item.protein_g}g</td>
+                  <td className="px-4 py-3 text-right text-white/70">{item.fat_g}g</td>
+                  <td className="px-4 py-3 text-right text-white/70">{item.calories}kcal</td>
+                  <td className="px-4 py-3 text-right text-white/70">{item.sodium_mg}mg</td>
+                  <td className="px-4 py-3 text-right text-white/70">{item.carbs_g}g</td>
+                  <td className="px-4 py-3 text-right text-white/70">{item.notes || '-'}</td>
+                  <td className="px-4 py-3 text-center space-x-2">
+                    <button
+                      onClick={() => setEditingItem(item)}
+                      className="text-pink-300 hover:text-pink-200 transition-colors"
+                    >
+                      编辑
+                    </button>
+                    <button
+                      onClick={() => item.id && handleDelete(item.id)}
+                      className="text-rose-400 hover:text-rose-300 transition-colors"
+                    >
+                      删除
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {editingItem && (
@@ -168,14 +178,14 @@ function FoodItemForm({ item, onSave, onCancel }: FoodItemFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-50 p-6 rounded-lg space-y-4">
-      <h4 className="font-semibold">{item ? '编辑食物' : '添加食物'}</h4>
+    <form onSubmit={handleSubmit} className="glass-card-inner backdrop-blur-md bg-white/5 rounded-2xl p-6 border border-white/10 space-y-4">
+      <h4 className="font-semibold text-white">{item ? '编辑食物' : '添加食物'}</h4>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <input
           placeholder="食物名称"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="col-span-2 px-3 py-2 border rounded-lg"
+          className="col-span-2 px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-transparent transition-all backdrop-blur-sm"
           required
         />
         <input
@@ -184,7 +194,7 @@ function FoodItemForm({ item, onSave, onCancel }: FoodItemFormProps) {
           step="0.1"
           value={formData.protein_g || ''}
           onChange={(e) => setFormData({ ...formData, protein_g: Number(e.target.value) })}
-          className="px-3 py-2 border rounded-lg"
+          className="px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-transparent transition-all backdrop-blur-sm"
           required
         />
         <input
@@ -193,7 +203,7 @@ function FoodItemForm({ item, onSave, onCancel }: FoodItemFormProps) {
           step="0.1"
           value={formData.fat_g || ''}
           onChange={(e) => setFormData({ ...formData, fat_g: Number(e.target.value) })}
-          className="px-3 py-2 border rounded-lg"
+          className="px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-transparent transition-all backdrop-blur-sm"
           required
         />
         <input
@@ -201,7 +211,7 @@ function FoodItemForm({ item, onSave, onCancel }: FoodItemFormProps) {
           placeholder="热量"
           value={formData.calories || ''}
           onChange={(e) => setFormData({ ...formData, calories: Number(e.target.value) })}
-          className="px-3 py-2 border rounded-lg"
+          className="px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-transparent transition-all backdrop-blur-sm"
           required
         />
         <input
@@ -209,7 +219,7 @@ function FoodItemForm({ item, onSave, onCancel }: FoodItemFormProps) {
           placeholder="钠"
           value={formData.sodium_mg || ''}
           onChange={(e) => setFormData({ ...formData, sodium_mg: Number(e.target.value) })}
-          className="px-3 py-2 border rounded-lg"
+          className="px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-transparent transition-all backdrop-blur-sm"
           required
         />
         <input
@@ -218,7 +228,7 @@ function FoodItemForm({ item, onSave, onCancel }: FoodItemFormProps) {
           step="0.1"
           value={formData.carbs_g || ''}
           onChange={(e) => setFormData({ ...formData, carbs_g: Number(e.target.value) })}
-          className="px-3 py-2 border rounded-lg"
+          className="px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-transparent transition-all backdrop-blur-sm"
           required
         />
         <input
@@ -226,26 +236,26 @@ function FoodItemForm({ item, onSave, onCancel }: FoodItemFormProps) {
           placeholder="参考份量"
           value={formData.serving_size_g || 100}
           onChange={(e) => setFormData({ ...formData, serving_size_g: Number(e.target.value) })}
-          className="px-3 py-2 border rounded-lg"
+          className="px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-transparent transition-all backdrop-blur-sm"
         />
         <input
           placeholder="备注"
           value={formData.notes || ''}
           onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-          className="col-span-2 px-3 py-2 border rounded-lg"
+          className="col-span-2 px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-transparent transition-all backdrop-blur-sm"
         />
       </div>
       <div className="flex gap-2">
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="px-6 py-2 bg-gradient-to-r from-pink-500 to-blue-500 text-white font-medium rounded-xl hover:from-pink-600 hover:to-blue-600 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/25 transform hover:-translate-y-0.5"
         >
           保存
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+          className="px-6 py-2 bg-white/10 border border-white/20 text-white/70 font-medium rounded-xl hover:bg-white/15 transition-all duration-300"
         >
           取消
         </button>

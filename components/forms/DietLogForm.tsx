@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-export default function DietLogForm() {
+export default function DietLogFormGlass() {
   const [input, setInput] = useState('')
 
   const exampleInputs = [
@@ -14,24 +14,23 @@ export default function DietLogForm() {
   return (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium mb-2">饮食记录</label>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="描述吃的食物，例如：吃了180g鸡胸肉、两个鸡蛋..."
           rows={4}
-          className="w-full px-4 py-3 border rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-5 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-transparent transition-all resize-none backdrop-blur-sm"
         />
       </div>
 
       <div>
-        <p className="text-sm text-gray-600 mb-2">参考示例：</p>
-        <div className="space-y-2">
+        <p className="text-sm text-white/60 mb-3">参考示例：</p>
+        <div className="grid gap-3">
           {exampleInputs.map((example, index) => (
             <button
               key={index}
               onClick={() => setInput(example)}
-              className="w-full text-left px-4 py-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition text-sm"
+              className="w-full text-left px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl transition-all duration-300 text-sm text-white/80 hover:text-white backdrop-blur-sm"
             >
               {example}
             </button>

@@ -1,14 +1,14 @@
 'use client'
 
 import { useAuth } from '@/components/auth/AuthProvider'
-import { getSupabaseBrowserClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 import { LogOut, User } from 'lucide-react'
 
 export function Navbar() {
   const { user } = useAuth()
 
   const handleLogout = async () => {
-    const supabase = getSupabaseBrowserClient()
+    const supabase = createClient()
     await supabase.auth.signOut()
     window.location.href = '/auth/login'
   }
@@ -18,8 +18,8 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🍽️</span>
-            <span className="text-white font-semibold text-lg">饮食记录</span>
+            <span className="text-2xl">🧠</span>
+            <span className="text-white font-semibold text-lg">AI营养分析师</span>
           </div>
 
           {user && (

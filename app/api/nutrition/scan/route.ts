@@ -38,16 +38,21 @@ export async function POST(request: NextRequest) {
 1. 食品名称
 2. 蛋白质含量 (每100g)
 3. 脂肪含量 (每100g)
-4. 热量 (每100g, 单位kcal)
+4. 热量 (每100g)
 5. 钠含量 (每100g, 单位mg)
 6. 碳水化合物含量 (每100g)
+
+重要：请仔细查看图片上热量的单位。
+- 如果单位是 kJ、KJ、千焦、千焦等，请在 calories_unit 字段返回 "KJ"
+- 如果单位是 kcal、卡、千卡等，请在 calories_unit 字段返回 "kcal"
 
 请以严格的JSON格式返回，不要包含任何其他文字：
 {
   "name": "食品名称",
   "protein_g": 数值,
   "fat_g": 数值,
-  "calories": 数值,
+  "calories": 数值（按图片上的数值原样返回）,
+  "calories_unit": "kcal" 或 "KJ"（图片上实际的热量单位）,
   "sodium_mg": 数值,
   "carbs_g": 数值,
   "notes": "备注信息（如有）"
@@ -78,11 +83,32 @@ export async function POST(request: NextRequest) {
       if (jsonMatch) {
         try {
           const nutritionData = JSON.parse(jsonMatch[0])
+
+          // 热量转换：根据AI返回的单位进行转换
+          let calories = Number(nutritionData.calories) || 0
+          const caloriesUnit = (nutritionData.calories_unit || '').toUpperCase()
+
+          // 判断是否需要从kJ转换为kcal
+          const isKilojoule = caloriesUnit === 'KJ' || caloriesUnit === 'K' || caloriesUnit === '千焦' ||
+                              caloriesUnit === '千卡/千焦' || caloriesUnit.includes('千焦')
+
+          if (isKilojoule) {
+            // 转换公式：kcal = kJ ÷ 4.184
+            const originalKj = calories
+            calories = Math.round((calories / 4.184) * 100) / 100
+            console.log(`热量从 ${originalKj} KJ 转换为 ${calories} kcal`)
+          } else if (calories > 3000) {
+            // 如果热量值非常大（超过3000），很可能是kJ
+            const originalKj = calories
+            calories = Math.round((calories / 4.184) * 100) / 100
+            console.log(`检测到热量值过大(${originalKj})，判断为kJ单位，转换为 ${calories} kcal`)
+          }
+
           return NextResponse.json({
             name: nutritionData.name || '未知食物',
             protein_g: Number(nutritionData.protein_g) || 0,
             fat_g: Number(nutritionData.fat_g) || 0,
-            calories: Number(nutritionData.calories) || 0,
+            calories: calories,
             sodium_mg: Number(nutritionData.sodium_mg) || 0,
             carbs_g: Number(nutritionData.carbs_g) || 0,
           })

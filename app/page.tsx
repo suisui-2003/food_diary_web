@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { Navbar } from '@/components/layout/Navbar'
 import DietLogPage from '@/components/pages/DietLogPage'
@@ -9,8 +10,15 @@ import ManagementPage from '@/components/pages/ManagementPage'
 type TabType = 'diet-log' | 'management'
 
 export default function Home() {
-  const { loading } = useAuth()
+  const router = useRouter()
+  const { user, loading } = useAuth()
   const [activeTab, setActiveTab] = useState<TabType>('diet-log')
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth/login')
+    }
+  }, [user, loading, router])
 
   if (loading) {
     return (
@@ -39,7 +47,7 @@ export default function Home() {
         {/* Header */}
         <div className="pt-8 pb-6">
           <h1 className="text-3xl md:text-4xl font-bold text-white text-center tracking-wide" style={{ textShadow: '0 0 40px rgba(255,255,255,0.3)' }}>
-            🍽️ 饮食记录
+            🧠 AI营养分析师
           </h1>
         </div>
 

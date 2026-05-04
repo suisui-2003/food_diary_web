@@ -1,8 +1,9 @@
-import { supabase } from './client'
+import { createClient } from './client'
 
 export async function getProfile() {
   try {
-    const { data, error } = await supabase
+    const client = createClient()
+    const { data, error } = await client
       .from('profiles')
       .select('*')
       .limit(1)
@@ -21,7 +22,8 @@ export async function getProfile() {
 
 export async function upsertProfile(profile: any) {
   try {
-    const { data, error } = await supabase
+    const client = createClient()
+    const { data, error } = await client
       .from('profiles')
       .upsert(profile)
       .select()
@@ -40,7 +42,8 @@ export async function upsertProfile(profile: any) {
 
 export async function getFoodItems() {
   try {
-    const { data, error } = await supabase
+    const client = createClient()
+    const { data, error } = await client
       .from('food_items')
       .select('*')
       .order('created_at', { ascending: false })
@@ -58,7 +61,8 @@ export async function getFoodItems() {
 
 export async function addFoodItem(item: any) {
   try {
-    const { data, error } = await supabase
+    const client = createClient()
+    const { data, error } = await client
       .from('food_items')
       .insert(item)
       .select()
@@ -77,7 +81,8 @@ export async function addFoodItem(item: any) {
 
 export async function updateFoodItem(id: string, item: any) {
   try {
-    const { data, error } = await supabase
+    const client = createClient()
+    const { data, error } = await client
       .from('food_items')
       .update(item)
       .eq('id', id)
@@ -97,7 +102,8 @@ export async function updateFoodItem(id: string, item: any) {
 
 export async function deleteFoodItem(id: string) {
   try {
-    const { error } = await supabase
+    const client = createClient()
+    const { error } = await client
       .from('food_items')
       .delete()
       .eq('id', id)
@@ -115,13 +121,14 @@ export async function deleteFoodItem(id: string) {
 
 export async function getDietLogs() {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const client = createClient()
+    const { data: { user } } = await client.auth.getUser()
 
     if (!user) {
       return []
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('diet_logs')
       .select('*')
       .eq('user_id', user.id)
@@ -140,13 +147,14 @@ export async function getDietLogs() {
 
 export async function addDietLog(log: any) {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const client = createClient()
+    const { data: { user } } = await client.auth.getUser()
 
     if (!user) {
       return null
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('diet_logs')
       .insert({ ...log, user_id: user.id })
       .select()
@@ -165,13 +173,14 @@ export async function addDietLog(log: any) {
 
 export async function deleteDietLog(id: string) {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const client = createClient()
+    const { data: { user } } = await client.auth.getUser()
 
     if (!user) {
       return false
     }
 
-    const { error } = await supabase
+    const { error } = await client
       .from('diet_logs')
       .delete()
       .eq('id', id)

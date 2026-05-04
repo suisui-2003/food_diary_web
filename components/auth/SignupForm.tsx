@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { getSupabaseBrowserClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 
 export function SignupForm() {
   const router = useRouter()
@@ -30,7 +30,7 @@ export function SignupForm() {
     setLoading(true)
 
     try {
-      const supabase = getSupabaseBrowserClient()
+      const supabase = createClient()
       const { error } = await supabase.auth.signUp({
         email,
         password,

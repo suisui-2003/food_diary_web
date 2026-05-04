@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "food-diary-debug": {
+      "command": "node",
+      "args": [".claude/mcp-server.js"],
+      "cwd": "D:/projects/food_diary_web",
+      "env": {
+        "PORT": "3002"
+      }
+    }
+  }
+}

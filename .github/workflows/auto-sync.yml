@@ -1,0 +1,24 @@
+name: Auto Sync Every 2 Hours
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'  # 每2小时执行 (UTC时间)
+  workflow_dispatch:       # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config user.name "Auto Sync Bot"
+          git config user.email "bot@example.com"
+
+      - name: Commit and push changes
+        run: |
+          git add -A
+          git commit -m "Auto commit at $(date +'%Y-%m-%d %H:%M:%S')" --allow-empty || true
+          git push

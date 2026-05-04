@@ -1,26 +1,21 @@
 'use client'
 
-import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 
-let client: SupabaseClient | null = null
-
-export function getSupabaseBrowserClient() {
-  if (!client) {
-    client = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
-  }
-  return client
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 }
 
 export function useSupabaseClient() {
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null)
 
   useEffect(() => {
-    setSupabase(getSupabaseBrowserClient())
+    setSupabase(createClient())
   }, [])
 
   return supabase

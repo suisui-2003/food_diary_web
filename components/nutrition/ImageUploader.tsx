@@ -3,11 +3,11 @@
 import { useState, useRef } from 'react'
 import type { FoodItem } from '@/lib/utils/nutritionCalculator'
 
-interface ImageUploaderProps {
+interface ImageUploaderGlassProps {
   onScanned: (item: FoodItem) => void
 }
 
-export default function ImageUploader({ onScanned }: ImageUploaderProps) {
+export default function ImageUploaderGlass({ onScanned }: ImageUploaderGlassProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [isDragging, setIsDragging] = useState(false)
@@ -78,7 +78,9 @@ export default function ImageUploader({ onScanned }: ImageUploaderProps) {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    processFile(file)
+    if (file) {
+      processFile(file)
+    }
   }
 
   const fileToBase64 = (file: File): Promise<string> => {
@@ -119,10 +121,10 @@ export default function ImageUploader({ onScanned }: ImageUploaderProps) {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !loading && fileInputRef.current?.click()}
-        className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition ${
+        className={`glass-card-inner backdrop-blur-md rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 border-2 border-dashed ${
           isDragging
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-300 hover:border-blue-400'
+            ? 'border-pink-400 bg-white/10 transform scale-105'
+            : 'border-white/20 hover:border-pink-400/50 hover:bg-white/5'
         }`}
       >
         <input
@@ -134,24 +136,24 @@ export default function ImageUploader({ onScanned }: ImageUploaderProps) {
           disabled={loading}
         />
         <div className="space-y-3">
-          <div className="text-5xl">
+          <div className="text-5xl filter drop-shadow-lg">
             {loading ? '⏳' : isDragging ? '📥' : '📷'}
           </div>
-          <div className="text-lg font-medium text-gray-700">
+          <div className="text-lg font-medium text-white">
             {loading ? '识别中...' : isDragging ? '释放图片上传' : '拖放图片到这里'}
           </div>
-          <div className="text-sm text-gray-500">
-            或者 <span className="text-blue-600 hover:underline">点击选择文件</span>
+          <div className="text-sm text-white/60">
+            或者 <span className="text-pink-300 hover:text-pink-200 transition-colors">点击选择文件</span>
           </div>
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-white/40">
             支持 JPG、PNG、WEBP 格式，文件大小不超过 10MB
           </div>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          {error}
+        <div className="glass-card-inner backdrop-blur-md bg-rose-500/10 rounded-xl px-4 py-3 border border-rose-500/20">
+          <p className="text-rose-300 text-sm">{error}</p>
         </div>
       )}
     </div>

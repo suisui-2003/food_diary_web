@@ -1,3 +1,5 @@
+import type { NutritionTargets } from '@/lib/utils/nutritionCalculator'
+
 export interface Profile {
   id?: string
   height_cm?: number
@@ -106,13 +108,7 @@ function getStoredFoodItems(): FoodItem[] {
 }
 
 function getDefaultFoodItems(): FoodItem[] {
-  return [
-    { id: '1', name: '香蕉', protein_g: 1.1, fat_g: 0.3, calories: 89, sodium_mg: 1, carbs_g: 22.8, serving_size_g: 100 },
-    { id: '2', name: '鸡胸肉', protein_g: 31, fat_g: 3.6, calories: 165, sodium_mg: 74, carbs_g: 0, serving_size_g: 100 },
-    { id: '3', name: '牛肉', protein_g: 26, fat_g: 15, calories: 250, sodium_mg: 60, carbs_g: 0, serving_size_g: 100 },
-    { id: '4', name: '番茄', protein_g: 0.9, fat_g: 0.2, calories: 18, sodium_mg: 5, carbs_g: 3.9, serving_size_g: 100 },
-    { id: '5', name: '红薯', protein_g: 1.6, fat_g: 0.1, calories: 86, sodium_mg: 5, carbs_g: 20.1, serving_size_g: 100 },
-  ]
+  return []
 }
 
 function saveFoodItems(items: FoodItem[]) {
@@ -141,7 +137,7 @@ export function getProfile(): Profile {
   return getStoredProfile()
 }
 
-export function upsertProfile(profile: Profile): Promise<boolean> {
+export function upsertProfile(profile: Profile): boolean {
   saveProfile(profile)
   return true
 }
