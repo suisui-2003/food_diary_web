@@ -12,7 +12,10 @@ export default function FoodNutritionTable() {
   const [editingItem, setEditingItem] = useState<FoodItem | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [showImageUpload, setShowImageUpload] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(0)
+  const loadFoodItems = () => {
+    console.log('FoodNutritionTable: Loading food items')
+    setFoodItems(getFoodItems())
+  }
 
   useEffect(() => {
     if (!isReady) {
@@ -20,17 +23,17 @@ export default function FoodNutritionTable() {
       return
     }
 
-    console.log('FoodNutritionTable: Loading data, refreshKey:', refreshKey)
-    setFoodItems(getFoodItems())
+    console.log('FoodNutritionTable: Loading data')
+    loadFoodItems()
 
     const handleUpdate = () => {
       console.log('FoodNutritionTable: food-diary-update received')
-      setRefreshKey(prev => prev + 1)
+      loadFoodItems()
     }
 
     window.addEventListener('food-diary-update', handleUpdate)
     return () => window.removeEventListener('food-diary-update', handleUpdate)
-  }, [refreshKey, isReady])
+  }, [isReady])
 
   const handleAdd = (item: FoodItem) => {
     addFoodItem(item)

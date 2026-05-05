@@ -7,7 +7,10 @@ import { useAuth } from '@/components/auth/AuthProvider'
 export default function DietHistoryTable() {
   const { isReady } = useAuth()
   const [records, setRecords] = useState<any[]>([])
-  const [refreshKey, setRefreshKey] = useState(0)
+  const loadRecords = () => {
+    console.log('DietHistoryTable: Loading diet logs')
+    setRecords(getDietLogs())
+  }
 
   useEffect(() => {
     if (!isReady) {
@@ -15,17 +18,17 @@ export default function DietHistoryTable() {
       return
     }
 
-    console.log('DietHistoryTable: Loading data, refreshKey:', refreshKey)
-    setRecords(getDietLogs())
+    console.log('DietHistoryTable: Loading data')
+    loadRecords()
 
     const handleUpdate = () => {
       console.log('DietHistoryTable: food-diary-update received')
-      setRefreshKey(prev => prev + 1)
+      loadRecords()
     }
 
     window.addEventListener('food-diary-update', handleUpdate)
     return () => window.removeEventListener('food-diary-update', handleUpdate)
-  }, [refreshKey, isReady])
+  }, [isReady])
 
   const handleDelete = (id: string) => {
     if (confirm('确定要删除这条记录吗？')) {

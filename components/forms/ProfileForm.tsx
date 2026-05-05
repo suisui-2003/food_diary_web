@@ -16,9 +16,8 @@ export default function ProfileFormGlass() {
     goal: 'maintain',
   })
   const [targets, setTargets] = useState<NutritionTargets | null>(null)
-  const [refreshKey, setRefreshKey] = useState(0)
-  const [saveStatus, setSaveStatus] = useState<'saving' | 'saved' | 'error' | null>(null)
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isInitializedRef = useRef(false)
 
   useEffect(() => {
     if (!isReady) {
@@ -26,7 +25,13 @@ export default function ProfileFormGlass() {
       return
     }
 
-    console.log('ProfileForm: Loading data, refreshKey:', refreshKey, 'isReady:', isReady)
+    // 只初始化一次，避免重复加载
+    if (isInitializedRef.current) {
+      console.log('ProfileForm: Already initialized, skipping load')
+      return
+    }
+
+    console.log('ProfileForm: Loading data, isReady:', isReady)
     console.log('ProfileForm: Calling getProfile()')
     const data = getProfile()
     console.log('ProfileForm: getProfile returned:', data)
@@ -54,22 +59,18 @@ export default function ProfileFormGlass() {
       console.log('ProfileForm: No profile data returned')
     }
 
-    const handleUpdate = () => {
-      console.log('ProfileForm: food-diary-update received')
-      setRefreshKey(prev => prev + 1)
-    }
+    isInitializedRef.current = true
+  }, [isReady])
 
-    window.addEventListener('food-diary-update', handleUpdate)
-
+  useEffect(() => {
     // 组件卸载时保存数据
     return () => {
       console.log('ProfileForm: Component unmounting, saving profile...')
-      if (isReady) {
+      if (isReady && isInitializedRef.current) {
         upsertProfile(profile)
       }
-      window.removeEventListener('food-diary-update', handleUpdate)
     }
-  }, [refreshKey, isReady])
+  }, [isReady, profile])
 
   const handleCalculate = async () => {
     const result = calculateNutritionTargets(profile)
@@ -110,16 +111,7 @@ export default function ProfileFormGlass() {
     // 设置新的定时器，延迟 500ms 后保存
     saveTimeoutRef.current = setTimeout(() => {
       console.log('ProfileForm: Auto-saving profile on change', profile)
-      setSaveStatus('saving')
-      const success = upsertProfile(profile)
-      console.log('ProfileForm: Auto-save result:', success)
-      if (success) {
-        setSaveStatus('saved')
-        setTimeout(() => setSaveStatus(null), 2000)
-      } else {
-        setSaveStatus('error')
-        setTimeout(() => setSaveStatus(null), 3000)
-      }
+      upsertProfile(profile)
     }, 500)
 
     // 清理函数
@@ -133,36 +125,6 @@ export default function ProfileFormGlass() {
 
   return (
     <div className="space-y-6">
-      {/* 保存状态指示器 */}
-      {saveStatus && (
-        <div className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg ${
-          saveStatus === 'saving'
-            ? 'bg-blue-500/20 text-blue-300'
-            : saveStatus === 'saved'
-            ? 'bg-green-500/20 text-green-300'
-            : 'bg-red-500/20 text-red-300'
-        }`}>
-          {saveStatus === 'saving' && (
-            <>
-              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              <span>保存中...</span>
-            </>
-          )}
-          {saveStatus === 'saved' && (
-            <>
-              <span>✓</span>
-              <span>已保存</span>
-            </>
-          )}
-          {saveStatus === 'error' && (
-            <>
-              <span>✗</span>
-              <span>保存失败，请重试</span>
-            </>
-          )}
-        </div>
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium mb-2 text-white/80">身高 (cm)</label>

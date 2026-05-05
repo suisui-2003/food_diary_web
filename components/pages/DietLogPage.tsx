@@ -22,7 +22,6 @@ export default function DietLogPage() {
   const { isReady } = useAuth()
   const [analyzing, setAnalyzing] = useState(false)
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0])
-  const [refreshKey, setRefreshKey] = useState(0)
   const [target, setTarget] = useState<NutritionTargets>({
     daily_calories_target: 2000,
     daily_protein_target_g: 120,
@@ -39,24 +38,29 @@ export default function DietLogPage() {
   })
   const [todayRecords, setTodayRecords] = useState<DietLogRecord[]>([])
 
+  const loadData = () => {
+    console.log('DietLogPage: Loading data for date:', selectedDate)
+    loadTargets()
+    loadTodayRecords()
+  }
+
   useEffect(() => {
     if (!isReady) {
       console.log('DietLogPage: Waiting for auth to be ready')
       return
     }
 
-    console.log('DietLogPage: Loading data, refreshKey:', refreshKey)
-    loadTargets()
-    loadTodayRecords()
+    console.log('DietLogPage: Loading data')
+    loadData()
 
     const handleUpdate = () => {
       console.log('DietLogPage: food-diary-update received')
-      setRefreshKey(prev => prev + 1)
+      loadData()
     }
 
     window.addEventListener('food-diary-update', handleUpdate)
     return () => window.removeEventListener('food-diary-update', handleUpdate)
-  }, [selectedDate, refreshKey, isReady])
+  }, [selectedDate, isReady])
 
   const loadTargets = async () => {
     const profile = await getProfile()
